@@ -22,13 +22,34 @@ class Vehicle(models.Model):
     plug_type = models.CharField(max_length=20)
 
 class Station(models.Model):
-    pass
+    station_name = models.CharField(max_length=20,default = 'EV Station')
+    phone_no = models.IntegerField(default=0)
+    location = models.TextField(max_length = 100,default = None)
+    working_hours = models.CharField(max_length=20,default = '9:00 am to 11:00 pm')
+    star_rating = models.CharField(blank=True,max_length = 10)  #To be calculated as average of all ratings
+    active_status = models.BooleanField(default = True)
+    photos = models.ImageField(upload_to = 'stations/',blank = True)
 
 class Review(models.Model):
-    pass
+    STARS = (('1',1),('2',2),('3',3),('4',4),('5',5))
+    written_by = models.ForeignKey(User,null = True, on_delete=models.CASCADE)
+    about = models.ForeignKey(Station,null = True, on_delete=models.CASCADE)
+    rating = models.CharField(max_length = 10,default = '3', choices=STARS)
+    feedback = models.TextField(max_length=100, blank = True)
 
 class Plug(models.Model):
-    pass
+    PLUGS = (('IEC-60309','IEC-60309'),
+    ('IEC-62196(AC type 2)','IEC-62196(AC type 2)'),
+    ('3 Pin Connector(15 Amp)','3 Pin Connector(15 Amp)'),
+    ('CSS connector','CSS connector'),
+    ('GBT connector','GBT connector'),
+    ('CHAdeMO connector','CHAdeMO connector'))
+
+    station_name = models.ForeignKey(Station,null = True,on_delete=models.CASCADE)
+    charger_type = models.CharField(default = 'IEC-62196(AC type 2)',max_length = 25,choices = PLUGS)
+    charging_speed = models.FloatField(default = 0) #kW
+    charging_rate = models.FloatField(default = 0) #Rupees per 15 min
+    booking_status = models.BooleanField(default = False)
 
 class Booking(models.Model):
     owner = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
