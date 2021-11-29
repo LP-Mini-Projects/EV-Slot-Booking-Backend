@@ -19,7 +19,7 @@ class Vehicle(models.Model):
     registration_no = models.CharField(primary_key = True, max_length=11, unique=True)
     vehicle_identification_no = models.CharField(max_length=17, unique=True)
     vehicle_model = models.CharField(max_length = 30)
-    plug_type = models.CharField(max_lenth=20)
+    plug_type = models.CharField(max_length=20)
 
 class Station(models.Model):
     pass
@@ -31,6 +31,7 @@ class Plug(models.Model):
     pass
 
 class Booking(models.Model):
+    owner = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     station = models.OneToOneField(Station, related_name='Station', on_delete=models.CASCADE)
     plug = models.OneToOneField(Plug,related_name='Plug', on_delete=models.CASCADE)
     date = models.DateField()
