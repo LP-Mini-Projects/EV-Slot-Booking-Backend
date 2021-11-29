@@ -22,7 +22,7 @@ class Vehicle(models.Model):
     plug_type = models.CharField(max_lenth=20)
 
 class Station(models.Model):
-    name = models.CharField(max_length=50)
+    pass
 
 class Review(models.Model):
     pass
@@ -40,6 +40,7 @@ class Booking(models.Model):
     amount = models.DecimalField(max_digits = 6, decimal_places = 2)
 
 class Payment(models.Model):
+    payment_of = models.OneToOneField(Booking, on_delete=models.CASCADE)
     total_amt = models.DecimalField(max_digits = 6, decimal_places = 2)
     payment_status = models.BooleanField()
 
