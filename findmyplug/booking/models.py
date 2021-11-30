@@ -26,7 +26,7 @@ class Station(models.Model):
     phone_no = models.IntegerField(default=0)
     location = models.TextField(max_length = 100,default = None)
     working_hours = models.CharField(max_length=20,default = '9:00 am to 11:00 pm')
-    star_rating = models.CharField(blank=True,max_length = 10)  #To be calculated as average of all ratings
+    star_rating = models.CharField(null=True ,max_length = 2)  #To be calculated as average of all ratings
     active_status = models.BooleanField(default = True)
     photos = models.ImageField(upload_to = 'stations/',blank = True)
 
