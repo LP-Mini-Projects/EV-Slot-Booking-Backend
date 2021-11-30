@@ -21,9 +21,22 @@ class VehicleSerializer(serializers.ModelSerializer):
     pass
 
 class StationSerializer(serializers.ModelSerializer):
+
+    star_rating = serializers.SerializerMethodField()
+    
     class Meta:
         model = Station
         fields = '__all__'
+
+    def get_star_rating(self,obj):
+        star_rating = int(obj.star_rating)
+        reviews = Review.objects.filter(about = obj)
+        count = 1
+        for review in reviews:
+            star_rating += int(review.rating)
+            count += 1
+        return int(star_rating/count)
+
 
 class ReviewSerializer(serializers.ModelSerializer):
     about = StationSerializer()
