@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User
+from .models import User,Vehicle,Station,Review,Plug,Booking,Payment
 
 
 # Register your models here.
@@ -23,3 +23,9 @@ class UserAdmin(UserAdmin):
     filter_horizontal = ()
 
 admin.site.register(User, UserAdmin)
+admin.site.register(Vehicle)
+admin.site.register(Station)
+admin.site.register(Review)
+admin.site.register(Plug)
+admin.site.register(Booking)
+admin.site.register(Payment)
