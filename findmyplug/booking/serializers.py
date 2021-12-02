@@ -17,8 +17,20 @@ class RegisterSerializer(serializers.ModelSerializer):
 	def create(self,validated_data):
 		return User.objects.create_user(**validated_data)
 
+class LoginSerializer(serializers.ModelSerializer):
+    password=serializers.CharField(max_length=32,min_length=8,write_only = True)
+    
+    class Meta:
+        model = User
+        fields = ('username','password')
+
+
 class VehicleSerializer(serializers.ModelSerializer):
-    pass
+    owner = serializers.ReadOnlyField(source='owner.email')
+
+    class Meta:
+        model = Vehicle
+        fields = '__all__'
 
 class StationSerializer(serializers.ModelSerializer):
 
@@ -48,4 +60,19 @@ class PlugSerializer(serializers.ModelSerializer):
     station_name = StationSerializer()
     class Meta:
         model = Plug
+        fields = '__all__'
+
+class BookingSerializer(serializers.ModelSerializer):
+    owner = serializers.ReadOnlyField(source='owner.email')
+    station = serializers.ReadOnlyField(source='station.station_name')
+    plug = serializers.ReadOnlyField(source='plug.charger_type')
+    
+    class Meta:
+        model = Booking
+        fields = '__all__'
+
+class PaymentSerializer(serializers.ModelSerializer):
+    booking_id = serializers.ReadOnlyField(source='booking_id.id')
+    class Meta:
+        model = Payment
         fields = '__all__'
