@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from rest_framework.authtoken.models import Token
 
 # Create your models here.
 
@@ -14,12 +15,20 @@ class User(AbstractUser):
     def __str__(self):
         return self.email
 
+    @property
+    def token(self):
+        token = Token.objects.get(user=User.objects.get(self.id))
+        return token
+
 class Vehicle(models.Model):
     owner = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='Vehicle', on_delete=models.CASCADE)
     registration_no = models.CharField(primary_key = True, max_length=11, unique=True)
     vehicle_identification_no = models.CharField(max_length=17, unique=True)
     vehicle_model = models.CharField(max_length = 30)
     plug_type = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.vehicle_model
 
 class Station(models.Model):
     station_name = models.CharField(max_length=20,default = 'EV Station')
@@ -29,6 +38,9 @@ class Station(models.Model):
     star_rating = models.CharField(null=True ,max_length = 2)  #To be calculated as average of all ratings
     active_status = models.BooleanField(default = True)
     photos = models.ImageField(upload_to = 'stations/',blank = True)
+    
+    def __str__(self):
+        return self.station_name
 
 class Review(models.Model):
     STARS = (('1',1),('2',2),('3',3),('4',4),('5',5))
@@ -36,6 +48,9 @@ class Review(models.Model):
     about = models.ForeignKey(Station,null = True, on_delete=models.CASCADE)
     rating = models.CharField(max_length = 10,default = '3', choices=STARS)
     feedback = models.TextField(max_length=100, blank = True)
+
+    def __str__(self):
+        return self.written_by
 
 class Plug(models.Model):
     PLUGS = (('IEC-60309','IEC-60309'),
@@ -51,6 +66,9 @@ class Plug(models.Model):
     charging_rate = models.FloatField(default = 0) #Rupees per 15 min
     booking_status = models.BooleanField(default = False)
 
+    def __str__(self):
+        return self.charger_type
+
 class Booking(models.Model):
     owner = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     station = models.OneToOneField(Station, related_name='Station', on_delete=models.CASCADE)
@@ -61,8 +79,14 @@ class Booking(models.Model):
     units = models.PositiveSmallIntegerField()
     amount = models.DecimalField(max_digits = 6, decimal_places = 2)
 
+    def __str__(self):
+        return f'{self.start_time}-{self.end_time} by {self.owner} '
+
 class Payment(models.Model):
     payment_of = models.OneToOneField(Booking, on_delete=models.CASCADE)
     total_amt = models.DecimalField(max_digits = 6, decimal_places = 2)
     payment_status = models.BooleanField()
+
+    def __str__(self):
+        return f'{self.payment_of} {self.total_amt}'
 
