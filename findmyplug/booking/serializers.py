@@ -6,7 +6,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 	
 	class Meta:
 		model = User
-		fields = '__all__'
+		fields = ['username','email','password','phone','pincode']
 		
 	def validate(self,attrs):
 		username = attrs.get('username',' ')
@@ -22,7 +22,7 @@ class LoginSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('username','password')
+        fields = ['username','password']
 
 
 class VehicleSerializer(serializers.ModelSerializer):
