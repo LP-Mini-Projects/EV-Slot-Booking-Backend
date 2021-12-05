@@ -10,12 +10,14 @@ class RegisterSerializer(serializers.ModelSerializer):
 		
 	def validate(self,attrs):
 		username = attrs.get('username',' ')
+
 		if not username.isalnum():
 			raise serializers.ValidationError('Username must be alphanumeric only')
 		return attrs
 		
 	def create(self,validated_data):
-		return User.objects.create_user(**validated_data)
+            validated_data['is_active'] = False
+            return User.objects.create_user(**validated_data)
 
 class LoginSerializer(serializers.ModelSerializer):
     password=serializers.CharField(max_length=32,min_length=8,write_only = True)
