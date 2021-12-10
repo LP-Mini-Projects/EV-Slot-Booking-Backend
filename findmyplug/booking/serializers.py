@@ -1,18 +1,23 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 from .models import User,Vehicle,Station,Plug,Review,Booking,Payment
+
+import re
+
+email_pattern = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 
 class RegisterSerializer(serializers.ModelSerializer):
 	password=serializers.CharField(max_length=32,min_length=8,write_only = True)
 	
 	class Meta:
 		model = User
-		fields = ['username','email','password','phone','pincode']
+		fields = ['email','password','phone','pincode']
 		
 	def validate(self,attrs):
-		username = attrs.get('username',' ')
+		email = attrs.get('email',' ')
 
-		if not username.isalnum():
-			raise serializers.ValidationError('Username must be alphanumeric only')
+		if not email_pattern.match(email):
+			raise serializers.ValidationError('Please enter a valid email!')
 		return attrs
 		
 	def create(self,validated_data):
@@ -24,11 +29,12 @@ class LoginSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['username','password']
+        fields = ['email','password']
 
 
 class VehicleSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.email')
+    registration_no = serializers.CharField(validators=[UniqueValidator(queryset=Vehicle.objects.all(),message="Vehicle already registered by a user!")])
 
     class Meta:
         model = Vehicle

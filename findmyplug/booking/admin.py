@@ -7,7 +7,9 @@ from .models import User,Vehicle,Station,Review,Plug,Booking,Payment
 
 class UserAdmin(UserAdmin):
     model = User
-    list_display = ['email', 'username', 'pincode', 'phone']
+    list_display = ['email', 'pincode', 'phone','is_staff','is_active']
+    list_filter = ['email', 'pincode', 'phone','is_staff','is_active']
+
     fieldsets = UserAdmin.fieldsets + (
         (None, {'fields': ('phone', 'pincode')}),
     )
@@ -15,10 +17,10 @@ class UserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide,'),
-            'fields': ('email', 'password1', 'password2', 'phone', 'pincode'),
+            'fields': ('email', 'password1', 'password2', 'phone', 'pincode','is_staff','is_active'),
         }),
     )
-
+    search_fields = ('email',)
     ordering = ('email',)
     filter_horizontal = ()
 
