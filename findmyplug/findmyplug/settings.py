@@ -24,12 +24,11 @@ environ.Env.read_env()
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6ge8kr_(9k*d2euxlr*0-mf_*k-z8o^$q7pn@5f%-_4b12&7)a'
-
+SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['findmyplug.herokuapp.com']
 
 
 # Application definition
