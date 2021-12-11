@@ -1,10 +1,10 @@
-from rest_framework.generics import GenericAPIView
-from rest_framework import status
+from rest_framework.generics import GenericAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework import status,permissions,viewsets
 from django.contrib.auth import authenticate,login
 
 from rest_framework.authtoken.models import Token
-from .models import User
-from .serializers import RegisterSerializer,LoginSerializer
+from .models import User,Vehicle
+from .serializers import RegisterSerializer,LoginSerializer,VehicleSerializer
 from .Utils import Util
 
 from rest_framework.response import Response
@@ -36,14 +36,14 @@ class LoginAPI(GenericAPIView):
 	serializer_class = LoginSerializer
 	
 	def post(self,request,*args,**kwargs ):
-		username = request.data.get('username',None)
+		email = request.data.get('email',None)
 		password = request.data.get('password',None)
-		user = authenticate(username = username, password = password)
+		user = authenticate(email = email, password = password)
 		if user :
 			login(request,user)
 			serializer = self.serializer_class(user)
 			token = Token.objects.get(user=user)
-			return Response({'token' : token.key,'username' : user.username},status = status.HTTP_200_OK)
+			return Response({'token' : token.key,'email' : user.email},status = status.HTTP_200_OK)
 		return Response('Invalid Credentials',status = status.HTTP_404_NOT_FOUND)
 
 class EmailVerify(GenericAPIView):
@@ -54,3 +54,22 @@ class EmailVerify(GenericAPIView):
 			user.is_active = True
 			user.save()
 		return Response('Account Verified', status=status.HTTP_200_OK)
+
+class VehicleDetails(viewsets.ModelViewSet):
+	queryset = Vehicle.objects.all()
+	serializer_class = VehicleSerializer
+	permission_classes = [permissions.IsAuthenticated]
+
+	def get_queryset(self):
+		return Vehicle.objects.filter(owner=self.request.user)
+	
+	def perform_create(self,serializer):
+		serializer.save(owner = self.request.user)
+	
+	def update(self, request, *args, **kwargs):
+		kwargs['partial'] = True
+		return super().update(request, *args, **kwargs)
+		
+
+
+
