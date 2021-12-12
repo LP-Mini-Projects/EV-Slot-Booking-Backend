@@ -42,8 +42,8 @@ class User(AbstractUser):
 
     # extra fields
     email = models.EmailField(("Email Address"),primary_key=True)
-    phone = models.IntegerField(default=0)
-    pincode = models.IntegerField(default=000000)
+    phone = models.BigIntegerField(default=976934295)
+    pincode = models.IntegerField(default=00000)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS=[]
