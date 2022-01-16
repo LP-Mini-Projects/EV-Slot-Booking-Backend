@@ -72,7 +72,7 @@ class Station(models.Model):
     station_name = models.CharField(max_length=100,default = 'EV Station')
     phone_no = models.IntegerField(default=0)
     location = models.TextField(max_length = 100,default = None)
-    city = models.CharField(max_length=50)
+    city = models.CharField(max_length=50,default='Mumbai')
     working_hours = models.CharField(max_length=20,default = '9:00 am to 11:00 pm')
     star_rating = models.CharField(null=True ,max_length = 2)  #To be calculated as average of all ratings
     active_status = models.BooleanField(default = True)
