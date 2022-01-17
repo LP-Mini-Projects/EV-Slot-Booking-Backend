@@ -3,16 +3,14 @@ from rest_framework import status,permissions,viewsets
 from django.contrib.auth import authenticate,login
 
 from rest_framework.authtoken.models import Token
-from .models import User,Vehicle
-from .serializers import RegisterSerializer,LoginSerializer,VehicleSerializer
+from .models import Station, User,Vehicle
+from .serializers import RegisterSerializer,LoginSerializer, StationSerializer,VehicleSerializer
 from .Utils import Util
 
 from rest_framework.response import Response
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
-
-
 
 class RegisterAPI(GenericAPIView):
 	
@@ -69,7 +67,3 @@ class VehicleDetails(viewsets.ModelViewSet):
 	def update(self, request, *args, **kwargs):
 		kwargs['partial'] = True
 		return super().update(request, *args, **kwargs)
-		
-
-
-
