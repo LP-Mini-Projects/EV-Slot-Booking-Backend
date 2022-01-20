@@ -59,7 +59,8 @@ class User(AbstractUser):
         return token
 
 class Vehicle(models.Model):
-    owner = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='Vehicle', on_delete=models.CASCADE)
+    id = models.AutoField(primary_key=True)
+    owner = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='User', on_delete=models.CASCADE)
     registration_no = models.CharField(max_length=11, unique=True)
     vehicle_identification_no = models.CharField(max_length=17, unique=True)
     vehicle_model = models.CharField(max_length = 30)
@@ -109,9 +110,9 @@ class Plug(models.Model):
         return self.charger_type
 
 class Booking(models.Model):
-    owner = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    station = models.OneToOneField(Station, related_name='Station', on_delete=models.CASCADE)
-    plug = models.OneToOneField(Plug,related_name='Plug', on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    station = models.ForeignKey(Station,on_delete=models.CASCADE)
+    plug = models.OneToOneField(Plug,related_name='Plug',on_delete=models.CASCADE)
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()

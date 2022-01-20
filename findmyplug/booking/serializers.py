@@ -73,7 +73,7 @@ class PlugSerializer(serializers.ModelSerializer):
 class BookingSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.email')
     station = serializers.ReadOnlyField(source='station.station_name')
-    plug = serializers.ReadOnlyField(source='plug.charger_type')
+    #plug = serializers.ReadOnlyField(source='plug.charger_type')
     
     class Meta:
         model = Booking
