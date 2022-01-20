@@ -59,7 +59,6 @@ class User(AbstractUser):
         return token
 
 class Vehicle(models.Model):
-    id = models.AutoField(primary_key=True)
     owner = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='User', on_delete=models.CASCADE)
     registration_no = models.CharField(max_length=11, unique=True)
     vehicle_identification_no = models.CharField(max_length=17, unique=True)
