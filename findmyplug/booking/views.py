@@ -1,9 +1,10 @@
 from re import L
-from rest_framework.generics import GenericAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import GenericAPIView
 from rest_framework import status,permissions,viewsets
 from django.contrib.auth import authenticate,login
 
 from rest_framework.authtoken.models import Token
+
 from .models import Booking, Plug, Station, User,Vehicle
 from .serializers import RegisterSerializer,LoginSerializer,VehicleSerializer, BookingSerializer
 from .Utils import Util
@@ -12,8 +13,6 @@ from rest_framework.response import Response
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
-
-
 
 class RegisterAPI(GenericAPIView):
 	
