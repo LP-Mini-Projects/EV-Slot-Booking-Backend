@@ -1,4 +1,3 @@
-from re import L
 from rest_framework.generics import GenericAPIView
 from rest_framework import status,permissions,viewsets
 from django.contrib.auth import authenticate,login
@@ -6,7 +5,7 @@ from django.contrib.auth import authenticate,login
 from rest_framework.authtoken.models import Token
 
 from .models import Booking, Plug, Station, User,Vehicle
-from .serializers import RegisterSerializer,LoginSerializer,VehicleSerializer, BookingSerializer
+from .serializers import RegisterSerializer,LoginSerializer, StationSerializer,VehicleSerializer, BookingSerializer
 from .Utils import Util
 
 from rest_framework.response import Response
@@ -89,3 +88,11 @@ class BookingAPI(viewsets.ModelViewSet):
 	def update(self, request, *args, **kwargs):
 		kwargs['partial'] = True
 		return super().update(request, *args, **kwargs)
+
+class StationAPI(viewsets.ModelViewSet):
+	queryset = Station.objects.all()
+	serializer_class = StationSerializer
+	permission_classes = [permissions.IsAuthenticated]
+
+	def get_queryset(self):
+		return Station.objects.all()
