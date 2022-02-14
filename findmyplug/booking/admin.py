@@ -10,8 +10,10 @@ class UserAdmin(UserAdmin):
     list_display = ['email', 'pincode', 'phone','is_staff','is_active']
     list_filter = ['email', 'pincode', 'phone','is_staff','is_active']
 
-    fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('phone', 'pincode')}),
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        ('Personal info', {'fields': ('pincode','phone')}),
+        ('Permissions', {'fields': ('is_active','is_staff')}),
     )
 
     add_fieldsets = (

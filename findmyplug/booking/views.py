@@ -1,18 +1,17 @@
-from rest_framework.generics import GenericAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import GenericAPIView
 from rest_framework import status,permissions,viewsets
 from django.contrib.auth import authenticate,login
 
 from rest_framework.authtoken.models import Token
-from .models import User,Vehicle
-from .serializers import RegisterSerializer,LoginSerializer,VehicleSerializer
+
+from .models import Booking, Plug, Station, User,Vehicle
+from .serializers import RegisterSerializer,LoginSerializer, StationSerializer,VehicleSerializer, BookingSerializer
 from .Utils import Util
 
 from rest_framework.response import Response
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
-
-
 
 class RegisterAPI(GenericAPIView):
 	
@@ -69,7 +68,31 @@ class VehicleDetails(viewsets.ModelViewSet):
 	def update(self, request, *args, **kwargs):
 		kwargs['partial'] = True
 		return super().update(request, *args, **kwargs)
-		
 
+class BookingAPI(viewsets.ModelViewSet):
+	queryset = Booking.objects.all()
+	serializer_class = BookingSerializer
+	permission_classes = [permissions.IsAuthenticated]
+	
+	def get_queryset(self):
+		return Booking.objects.filter(owner=self.request.user)
+	
+	def perform_create(self,serializer):
+		plug_id = self.request.data['plug']
+		plug = Plug.objects.get(id=plug_id)
+		station = Station.objects.get(id = plug.station_name.id)
+		serializer.save(owner = self.request.user,plug = plug, station = station)
+		plug.booking_status = True
+		plug.save()
 
+	def update(self, request, *args, **kwargs):
+		kwargs['partial'] = True
+		return super().update(request, *args, **kwargs)
 
+class StationAPI(viewsets.ModelViewSet):
+	queryset = Station.objects.all()
+	serializer_class = StationSerializer
+	permission_classes = [permissions.IsAuthenticated]
+
+	def get_queryset(self):
+		return Station.objects.all()

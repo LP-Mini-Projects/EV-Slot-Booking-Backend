@@ -5,6 +5,8 @@ from django.conf.urls import include,url
 
 router = DefaultRouter()
 router.register(r'vehicles', views.VehicleDetails)
+router.register(r'bookings', views.BookingAPI)
+router.register(r'station', views.StationAPI)
 
 urlpatterns = [
     url('', include(router.urls)),

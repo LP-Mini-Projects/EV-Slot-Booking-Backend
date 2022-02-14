@@ -42,8 +42,8 @@ class User(AbstractUser):
 
     # extra fields
     email = models.EmailField(("Email Address"),primary_key=True)
-    phone = models.IntegerField(default=0)
-    pincode = models.IntegerField(default=000000)
+    phone = models.BigIntegerField(default=976934295)
+    pincode = models.IntegerField(default=00000)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS=[]
@@ -59,7 +59,7 @@ class User(AbstractUser):
         return token
 
 class Vehicle(models.Model):
-    owner = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='Vehicle', on_delete=models.CASCADE)
+    owner = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='User', on_delete=models.CASCADE)
     registration_no = models.CharField(max_length=11, unique=True)
     vehicle_identification_no = models.CharField(max_length=17, unique=True)
     vehicle_model = models.CharField(max_length = 30)
@@ -69,9 +69,10 @@ class Vehicle(models.Model):
         return self.vehicle_model
 
 class Station(models.Model):
-    station_name = models.CharField(max_length=20,default = 'EV Station')
+    station_name = models.CharField(max_length=100,default = 'EV Station')
     phone_no = models.IntegerField(default=0)
     location = models.TextField(max_length = 100,default = None)
+    city = models.CharField(max_length=50,default='Mumbai')
     working_hours = models.CharField(max_length=20,default = '9:00 am to 11:00 pm')
     star_rating = models.CharField(null=True ,max_length = 2)  #To be calculated as average of all ratings
     active_status = models.BooleanField(default = True)
@@ -108,9 +109,9 @@ class Plug(models.Model):
         return self.charger_type
 
 class Booking(models.Model):
-    owner = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    station = models.OneToOneField(Station, related_name='Station', on_delete=models.CASCADE)
-    plug = models.OneToOneField(Plug,related_name='Plug', on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    station = models.ForeignKey(Station,on_delete=models.CASCADE)
+    plug = models.OneToOneField(Plug,related_name='Plug',on_delete=models.CASCADE)
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
