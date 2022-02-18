@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework.generics import GenericAPIView
 from rest_framework import status,permissions,viewsets
 from django.contrib.auth import authenticate,login
@@ -78,10 +79,19 @@ class BookingAPI(viewsets.ModelViewSet):
 		return Booking.objects.filter(owner=self.request.user)
 	
 	def perform_create(self,serializer):
+		owner = self.request.user
+
 		plug_id = self.request.data['plug']
 		plug = Plug.objects.get(id=plug_id)
 		station = Station.objects.get(id = plug.station_name.id)
-		serializer.save(owner = self.request.user,plug = plug, station = station)
+		date = self.request.data['date']
+		starttime = self.request.data['start_time']
+		endtime = self.request.data['end_time']
+		booking,k = Booking.objects.get_or_create(station = station,plug = plug,date = date,start_time = starttime,end_time = endtime)
+		booking.owner = owner
+		booking.save()
+		print(k)
+		#serializer.save(owner = self.request.user,plug = plug, station = station)
 		plug.booking_status = True
 		plug.save()
 
@@ -95,4 +105,7 @@ class StationAPI(viewsets.ModelViewSet):
 	permission_classes = [permissions.IsAuthenticated]
 
 	def get_queryset(self):
-		return Station.objects.all()
+		owner = self.request.user
+		vehicle = Vehicle.objects.get(owner = owner)
+		plug = Plug.objects.filter(charger_type = vehicle.plug_type)
+		return Station.objects.filter(id__in = plug)

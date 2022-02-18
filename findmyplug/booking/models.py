@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
@@ -58,12 +59,19 @@ class User(AbstractUser):
         token = Token.objects.get(user=User.objects.get(self.id))
         return token
 
+PLUGS = (('IEC-60309','IEC-60309'),
+    ('IEC-62196(AC type 2)','IEC-62196(AC type 2)'),
+    ('3 Pin Connector(15 Amp)','3 Pin Connector(15 Amp)'),
+    ('CSS connector','CSS connector'),
+    ('GBT connector','GBT connector'),
+    ('CHAdeMO connector','CHAdeMO connector'))
+
 class Vehicle(models.Model):
     owner = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='User', on_delete=models.CASCADE)
     registration_no = models.CharField(max_length=11, unique=True)
     vehicle_identification_no = models.CharField(max_length=17, unique=True)
     vehicle_model = models.CharField(max_length = 30)
-    plug_type = models.CharField(max_length=20)
+    plug_type = models.CharField(default = 'IEC-62196(AC type 2)',max_length = 25,choices = PLUGS)
 
     def __str__(self):
         return self.vehicle_model
@@ -92,12 +100,6 @@ class Review(models.Model):
         return self.written_by
 
 class Plug(models.Model):
-    PLUGS = (('IEC-60309','IEC-60309'),
-    ('IEC-62196(AC type 2)','IEC-62196(AC type 2)'),
-    ('3 Pin Connector(15 Amp)','3 Pin Connector(15 Amp)'),
-    ('CSS connector','CSS connector'),
-    ('GBT connector','GBT connector'),
-    ('CHAdeMO connector','CHAdeMO connector'))
 
     station_name = models.ForeignKey(Station,null = True,on_delete=models.CASCADE)
     charger_type = models.CharField(default = 'IEC-62196(AC type 2)',max_length = 25,choices = PLUGS)
@@ -111,7 +113,7 @@ class Plug(models.Model):
 class Booking(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     station = models.ForeignKey(Station,on_delete=models.CASCADE)
-    plug = models.OneToOneField(Plug,related_name='Plug',on_delete=models.CASCADE)
+    plug = models.ForeignKey(Plug,related_name='Plug',on_delete=models.CASCADE)
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -120,6 +122,13 @@ class Booking(models.Model):
 
     def __str__(self):
         return f'{self.start_time}-{self.end_time} by {self.owner} '
+
+    def timings(self):
+        if self.end_time < datetime.now():
+            self.plug.booking_status = False
+        if self.start_time > datetime.now():
+            self.plug.booking_status = True
+
 
 class Payment(models.Model):
     payment_of = models.OneToOneField(Booking, on_delete=models.CASCADE)
