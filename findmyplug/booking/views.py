@@ -98,6 +98,8 @@ class SlotAPI(GenericAPIView):
 			try:
 				slot = Slot.objects.get(date = date, start_time = time)
 				time = slot.end_time
+				str = ''
+				count = 0
 			except:
 				if count == 0:
 					str = f'{time}' + '-'
