@@ -5,7 +5,7 @@ from django.conf.urls import include,url
 
 router = DefaultRouter()
 router.register(r'vehicles', views.VehicleDetails)
-router.register(r'bookings', views.BookingAPI)
+#router.register(r'bookings', views.BookingAPI)
 router.register(r'station', views.StationAPI)
 
 urlpatterns = [
@@ -13,4 +13,5 @@ urlpatterns = [
     path('register/', views.RegisterAPI.as_view(), name = 'register'),
     path('login/', views.LoginAPI.as_view(), name = 'login'),
     path('email-verify/', views.EmailVerify.as_view(), name = 'email-verify'),
+    path('slot/', views.SlotAPI.as_view(), name = 'slot'),
 ]
