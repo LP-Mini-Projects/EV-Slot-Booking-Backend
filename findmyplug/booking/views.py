@@ -1,10 +1,11 @@
+import datetime
 from rest_framework.generics import GenericAPIView
 from rest_framework import status,permissions,viewsets
 from django.contrib.auth import authenticate,login
 
 from rest_framework.authtoken.models import Token
 
-from .models import Booking, Plug, Station, User,Vehicle
+from .models import Booking, Plug, Station, User, Vehicle, Slot
 from .serializers import RegisterSerializer,LoginSerializer, StationSerializer,VehicleSerializer, BookingSerializer
 from .Utils import Util
 
@@ -69,25 +70,57 @@ class VehicleDetails(viewsets.ModelViewSet):
 		kwargs['partial'] = True
 		return super().update(request, *args, **kwargs)
 
-class BookingAPI(viewsets.ModelViewSet):
+class SlotAPI(GenericAPIView):
 	queryset = Booking.objects.all()
 	serializer_class = BookingSerializer
 	permission_classes = [permissions.IsAuthenticated]
 	
-	def get_queryset(self):
+	def get(self):
 		return Booking.objects.filter(owner=self.request.user)
 	
-	def perform_create(self,serializer):
+	def post(self,request):
+		owner = self.request.user
+		date = self.request.data['date']
+		duration = int(self.request.data['duration'])
+		capacity = self.request.data['capacity']
 		plug_id = self.request.data['plug']
 		plug = Plug.objects.get(id=plug_id)
 		station = Station.objects.get(id = plug.station_name.id)
+		time = datetime.time(0,0,0,0)
+		slot_list = []
+		str = ''
+		count = 0
+		while(time <= datetime.time(23,0,0,0)):
+			if count==duration:
+					count = 0
+					str += f'{time}'
+					slot_list.append(str)
+			try:
+				slot = Slot.objects.get(date = date, start_time = time)
+				time = slot.end_time
+				str = ''
+				count = 0
+			except:
+				if count == 0:
+					str = f'{time}' + '-'
+				hr = time.hour
+				if hr != 23:
+					time = datetime.time(hr+1,0,0,0)
+					count += 1
+				else:
+					break
+		return Response({'slots':f'{slot_list}'})	
+
+		'''date = self.request.data['date']
+		starttime = self.request.data['start_time']
+		endtime = self.request.data['end_time']
+		booking,k = Booking.objects.get_or_create(station = station,plug = plug,date = date,start_time = starttime,end_time = endtime)
+		booking.owner = owner
+		booking.save()
+		print(k)
 		serializer.save(owner = self.request.user,plug = plug, station = station)
 		plug.booking_status = True
-		plug.save()
-
-	def update(self, request, *args, **kwargs):
-		kwargs['partial'] = True
-		return super().update(request, *args, **kwargs)
+		plug.save()'''
 
 class StationAPI(viewsets.ModelViewSet):
 	queryset = Station.objects.all()
@@ -95,4 +128,7 @@ class StationAPI(viewsets.ModelViewSet):
 	permission_classes = [permissions.IsAuthenticated]
 
 	def get_queryset(self):
-		return Station.objects.all()
+		owner = self.request.user
+		vehicle = Vehicle.objects.get(owner = owner)
+		plug = Plug.objects.filter(charger_type = vehicle.plug_type)
+		return Station.objects.filter(id__in = plug)
