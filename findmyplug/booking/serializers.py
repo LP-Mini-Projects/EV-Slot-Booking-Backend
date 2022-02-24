@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import User,Vehicle,Station,Plug,Review,Booking,Payment
+from .models import Slot, User,Vehicle,Station,Plug,Review,Booking,Payment
 
 import re
 
@@ -70,11 +70,18 @@ class PlugSerializer(serializers.ModelSerializer):
         model = Plug
         fields = '__all__'
 
+class SlotSerializer(serializers.ModelSerializer):
+    plug = serializers.ReadOnlyField(source='plug.charger_type')
+    
+    class Meta:
+        model = Slot
+        fields = '__all__'
+
 class BookingSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.email')
     station = serializers.ReadOnlyField(source='station.station_name')
-    #plug = serializers.ReadOnlyField(source='plug.charger_type')
-    
+    plug = serializers.ReadOnlyField(source='plug.charger_type')
+    slot = SlotSerializer()
     class Meta:
         model = Booking
         fields = '__all__'
