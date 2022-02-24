@@ -1,9 +1,15 @@
 from datetime import datetime
+from django.core.files import storage
 from django.db import models
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from rest_framework.authtoken.models import Token
+
+from gdstorage.storage import GoogleDriveStorage
+
+# Define Google Drive Storage
+gd_storage = GoogleDriveStorage()
 
 # Create your models here.
 
@@ -84,7 +90,7 @@ class Station(models.Model):
     working_hours = models.CharField(max_length=20,default = '9:00 am to 11:00 pm')
     star_rating = models.CharField(null=True ,max_length = 2)  #To be calculated as average of all ratings
     active_status = models.BooleanField(default = True)
-    photos = models.ImageField(upload_to = 'stations/',blank = True)
+    photos = models.ImageField(upload_to = 'stations/',blank = True, storage=gd_storage)
     
     def __str__(self):
         return self.station_name
